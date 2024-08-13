@@ -9,11 +9,20 @@
 #define START 'A'
 #define PAUSE 'P'
 
+
+
+#include "BluetoothSerial.h"
+
+#if !defined(CONFIG_BT_ENABLED) || !defined(CONFIG_BLUEDROID_ENABLED)
+#error Bluetooth is not enabled! Please run `make menuconfig` to and enable it
+#endif
+BluetoothSerial SerialBT;
+
 #include <Cytron_SmartDriveDuo.h>
 
 int speed = 30;
 
-#define IN1 9
+#define IN1 4
 #define BAUDRATE 115200
 Cytron_SmartDriveDuo smartDriveDuo30(SERIAL_SIMPLIFIED, IN1, BAUDRATE);
  float right_wheel=0;
@@ -24,12 +33,14 @@ Cytron_SmartDriveDuo smartDriveDuo30(SERIAL_SIMPLIFIED, IN1, BAUDRATE);
 
 
 void setup() {
-  Serial.begin(9600);  // Set the baud rate for serial communication
+    SerialBT.begin("KratosFTW (ESP32)");  //Bluetooth device name
+
+  // Serial.begin(9600);  // Set the baud rate for serial communication
   // Initialize any other necessary setup code here
 }
 void loop() {
-  if (Serial.available()) {
-    char command = Serial.read();
+  if (SerialBT.available()) {
+    char command = SerialBT.read();
     executeCommand(command);
   }
   // Continue with other tasks in your main loop
